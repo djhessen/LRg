@@ -1,0 +1,17 @@
+Package: LRg
+Title: Logistic Regression
+Version: 0.1.0
+Authors@R: 
+    person("David J.", "Hessen", , "d.j.hessen@uu.nl", role = c("aut", "cre"))
+Author: David J. Hessen [aut, cre]
+Maintainer: David J. Hessen <d.j.hessen@uu.nl>
+Description: Functions for fitting different logistic regression models. Models included are the multinomial logistic regression model, the parallel adjacent-categories logit model, and multi-dimensional stereotype ordered and unordered regression models.
+License: MIT + file LICENSE
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.3.3
+Suggests: 
+    testthat (>= 3.0.0)
+Config/testthat/edition: 3
+LazyData: true
+Imports: maxLik

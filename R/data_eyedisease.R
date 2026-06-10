@@ -1,0 +1,15 @@
+#' Empirical dataset
+#'
+#' The data are 720 observations on 6 variables.
+#'
+#' @format A data frame with 720 rows and 6 columns
+#' \describe{
+#'   \item{diab}{diabetes}
+#'   \item{gh}{glycosylated haemoglobin level}
+#'   \item{dbp}{diastolic blood pressure}
+#'   \item{prot}{proteinuria}
+#'   \item{merl}{maximum severity of retinopathy in the left and right eye}
+#' }
+#'
+#' @source From the Wisconsin Epidemiological Study of Diabetic Retinopathy (Klein et al., 1984). From R package ordinalgmifs (Archer et al., 2014).
+'eyedisease'
