@@ -118,6 +118,12 @@ stn <- function(formula, q=NULL, data, stv=NULL, csv=0.001, tol=1.0e-8, maxit=10
     if (it==maxit && d>tol) {
       warning('Iteration limit reached without convergence')
     }
+    Gamma <- matrix(x[(m+1):(m+k*q)],nrow=k)
+    if (q==m) {
+      Phi <- U
+    } else {
+      Phi <- cbind(U,matrix(x[(m+k*q+1):(m+q*(k+m)-q^2)],nrow=q))
+    }
     J <- jacob_stn(Phi, Gamma)
     if (!inherits(tryCatch(solve(I,t(J)), error=function(e) e), "error")) {
       #se <- sqrt(diag(solve(I)))
