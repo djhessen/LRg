@@ -21,7 +21,7 @@
 #' \item{obs.cat}{Observed categories}
 #' @author David J. Hessen
 #' @export
-stn <- function(formula, q=NULL, data, stv=NULL, csv=0.001, tol=1.0e-8, maxit=100) {
+stn <- function(formula, q=NULL, data, stv=NULL, csv=1, tol=1.0e-8, maxit=100) {
   if (!is.null(q) && q==0) {
     formula <- stats::update(formula,.~1)
   }
