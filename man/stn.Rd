@@ -23,15 +23,18 @@ stn(formula, q = NULL, data, stv = NULL, csv = 0.001, tol = 1e-08, maxit = 100)
 }
 \value{
 A list of
-\item{alpha, Beta, Gamma, Phi}{Parameter estimates}
-\item{loglik}{Value of the log-likelihood function}
-\item{npars}{Number of estimated parameters}
+\item{alpha}{vector of estimated intercepts}
+\item{Beta}{matrix of estimated regressor effects}
+\item{Gamma, Phi}{matrices of parameter estimates}
+\item{loglik}{value of the log-likelihood function}
+\item{npars}{number of estimated parameters}
 \item{AIC}{Akaike information criterion}
 \item{BIC}{Bayesian information criterion}
-\item{fitted.values}{Model implied probabilities}
-\item{residuals}{Dummy responses minus fitted values}
-\item{pred.cat}{Model implied categories}
-\item{obs.cat}{Observed categories}
+\item{fitted.values}{model implied probabilities}
+\item{residuals}{dummy responses minus fitted values}
+\item{pred.cat}{model implied categories}
+\item{obs.cat}{observed categories}
+\item{CS, NK, MF}{Cox and Snell, Nagelkerke, and McFadden pseudo-R-squared values}
 }
 \description{
 This function can be used to fit a q-dimensional stereotype nominal regression model.
