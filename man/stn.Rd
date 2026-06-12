@@ -9,7 +9,7 @@ stn(formula, q = NULL, data, stv = NULL, csv = 0.001, tol = 1e-08, maxit = 100)
 \arguments{
 \item{formula}{model expression}
 
-\item{q}{rank}
+\item{q}{rank of the matrix of regressor effects. If not supplied, then it is set to its maximum.}
 
 \item{data}{data frame}
 

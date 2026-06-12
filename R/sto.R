@@ -3,7 +3,7 @@
 #' This function can be used to fit a q-dimensional stereotype ordered regression model.
 #'
 #' @param formula model expression
-#' @param q rank
+#' @param q rank of the matrix of regressor effects. If not supplied, then it is set to its maximum.
 #' @param data data frame
 #' @param maxit maximum number of iterations
 #' @param tol convergence tolerance
