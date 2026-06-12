@@ -7,7 +7,7 @@
 #' @param data data frame
 #' @param maxit maximum number of iterations
 #' @param tol convergence tolerance
-#' @return A list of
+#' @return A list of the following components
 #' \item{alpha}{vector of estimated intercepts}
 #' \item{Beta}{matrix of estimated regressor effects}
 #' \item{Gamma, Phi}{matrices of parameter estimates}

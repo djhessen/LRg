@@ -18,7 +18,7 @@ sto(formula, q = NULL, data, tol = 1e-08, maxit = 100)
 \item{maxit}{maximum number of iterations}
 }
 \value{
-A list of
+A list of the following components
 \item{alpha}{vector of estimated intercepts}
 \item{Beta}{matrix of estimated regressor effects}
 \item{Gamma, Phi}{matrices of parameter estimates}
