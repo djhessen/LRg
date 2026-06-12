@@ -200,7 +200,7 @@ sto <- function(formula, q=NULL, data, tol=1.0e-8, maxit=100) {
     }
 
     #fit<-maxLik::maxLik(logLik,grad=grad,hess=H,start=sv,constraints=list(ineqA=A,ineqB=B))
-    fit<-stats::constrOptim(sv,logLik,grad,A,B,control=list(fnscale=-1,reltol=1e-14),outer.eps=1e-14)
+    fit<-stats::constrOptim(sv,logLik,grad,A,B,control=list(fnscale=-1,reltol=1e-10),outer.eps=1e-11)
 
     alpha<-fit$par[1:m]
     gamma <- fit$par[(m+1):(m+k)]
