@@ -196,21 +196,22 @@ sto <- function(formula, q=NULL, data, tol=1.0e-8, maxit=100) {
       B<-rep(0,k*(q-1))
     }
 
-    fit<-maxLik::maxLik(logLik,grad=grad,hess=H,start=sv,constraints=list(ineqA=A,ineqB=B))
+    #fit<-maxLik::maxLik(logLik,grad=grad,hess=H,start=sv,constraints=list(ineqA=A,ineqB=B))
+    fit<-stats::constrOptim(sv,logLik,grad,A,B,control=list(fnscale=-1,reltol=1e-14),outer.eps=1e-14)
 
-    alpha<-fit$estimate[1:m]
-    gamma <- fit$estimate[(m+1):(m+k)]
+    alpha<-fit$par[1:m]
+    gamma <- fit$par[(m+1):(m+k)]
     Gamma<-diag(gamma)
     if (q==1) {
-      Phi<-matrix(c(1,fit$estimate[(m+k+1):(2*m+k-1)]),nrow=1)
+      Phi<-matrix(c(1,fit$par[(m+k+1):(2*m+k-1)]),nrow=1)
       Lambda<-matrix(rep(1,k),nrow=k)
     }
     if (q>1) {
-      Lambda<-matrix(c(rep(1,k),fit$estimate[(m+k+1):(m+q*k)]),nrow=k)
+      Lambda<-matrix(c(rep(1,k),fit$par[(m+k+1):(m+q*k)]),nrow=k)
       Phi1<-upper.tri(diag(q),diag=TRUE)*1
     }
     if (q>1 && q<m) {
-      Phi<-cbind(Phi1,matrix(fit$estimate[(m+q*k+1):(m+q*(k+m)-q^2)],nrow=q))
+      Phi<-cbind(Phi1,matrix(fit$par[(m+q*k+1):(m+q*(k+m)-q^2)],nrow=q))
     }
     if (q==m) {
       Phi<-Phi1
@@ -218,8 +219,8 @@ sto <- function(formula, q=NULL, data, tol=1.0e-8, maxit=100) {
     Beta<-Gamma%*%Lambda%*%Phi
     JC<-jacob(alpha,gamma,Lambda,Phi)
     x<-c(rbind(alpha,Gamma%*%Lambda%*%Phi))
-    se<-sqrt(diag(JC%*%solve(-H(fit$estimate))%*%t(JC)))
-    loglik <- logLik(fit$estimate)
+    se<-sqrt(diag(JC%*%solve(-H(fit$par))%*%t(JC)))
+    loglik <- logLik(fit$par)
   } else if (q==0) {
     x <- sva
     P <- exp(sva)/(1+sum(exp(sva)))
@@ -245,7 +246,7 @@ sto <- function(formula, q=NULL, data, tol=1.0e-8, maxit=100) {
     CS <- 1-exp(2*(ll0-loglik)/n)
     NK <- CS/(1-exp(2*ll0/n))
     MF <- 1-(loglik/ll0)
-    out <- list(pars=fit$estimate,npars=npars,A=A,B=B,
+    out <- list(pars=fit$par,npars=npars,A=A,B=B,
                 alpha=alpha,Beta=Beta,Gamma=Gamma,Phi=Phi,loglik=loglik,
                 npars=npars,AIC=aic,BiC=bic,
                 #fitted.values=fitv,residuals=res,pred.cat=pcat,

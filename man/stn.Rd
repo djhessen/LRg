@@ -4,7 +4,7 @@
 \alias{stn}
 \title{Stereotype nominal regression}
 \usage{
-stn(formula, q = NULL, data, stv = NULL, csv = 0.001, tol = 1e-08, maxit = 100)
+stn(formula, q = NULL, data, stv = NULL, csv = 1, tol = 1e-08, maxit = 100)
 }
 \arguments{
 \item{formula}{model expression}
