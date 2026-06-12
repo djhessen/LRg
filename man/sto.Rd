@@ -19,11 +19,14 @@ sto(formula, q = NULL, data, tol = 1e-08, maxit = 100)
 }
 \value{
 A list of
-\item{alpha, Beta, Gamma, Phi}{Parameter estimates}
+\item{alpha}{vector of estimated intercepts}
+\item{Beta}{matrix of estimated regressor effects}
+\item{Gamma, Phi}{matrices of parameter estimates}
 \item{loglik}{Value of the log-likelihood function}
 \item{npars}{Number of estimated parameters}
 \item{AIC}{Akaike information criterion}
 \item{BIC}{Bayesian information criterion}
+\item{CS, NK, MF}{Cox and Snell, Nagelkerke, and McFadden pseudo-R-squared values}
 }
 \description{
 This function can be used to fit a q-dimensional stereotype ordered regression model.

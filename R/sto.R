@@ -8,11 +8,14 @@
 #' @param maxit maximum number of iterations
 #' @param tol convergence tolerance
 #' @return A list of
-#' \item{alpha, Beta, Gamma, Phi}{Parameter estimates}
+#' \item{alpha}{vector of estimated intercepts}
+#' \item{Beta}{matrix of estimated regressor effects}
+#' \item{Gamma, Phi}{matrices of parameter estimates}
 #' \item{loglik}{Value of the log-likelihood function}
 #' \item{npars}{Number of estimated parameters}
 #' \item{AIC}{Akaike information criterion}
 #' \item{BIC}{Bayesian information criterion}
+#' \item{CS, NK, MF}{Cox and Snell, Nagelkerke, and McFadden pseudo-R-squared values}
 #' @author David J. Hessen
 #' @export
 sto <- function(formula, q=NULL, data, tol=1.0e-8, maxit=100) {
