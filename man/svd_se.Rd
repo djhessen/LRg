@@ -2,7 +2,7 @@
 % Please edit documentation in R/svd_se.R
 \name{svd_se}
 \alias{svd_se}
-\title{Standard errors base on svd of Fisher information}
+\title{Standard errors}
 \usage{
 svd_se(I, J, tol = NULL)
 }
@@ -17,7 +17,7 @@ svd_se(I, J, tol = NULL)
 standard errors
 }
 \description{
-Standard errors base on svd of Fisher information
+Robust standard errors obtained by svd of the Fisher information matrix
 }
 \author{
 David J. Hessen

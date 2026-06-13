@@ -1,4 +1,6 @@
-#' Standard errors base on svd of Fisher information
+#' Standard errors
+#'
+#' Robust standard errors obtained by svd of the Fisher information matrix
 #'
 #' @param I Fisher information matrix
 #' @param J Jacobian matrix
