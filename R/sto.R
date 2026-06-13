@@ -223,7 +223,7 @@ sto <- function(formula, q=NULL, data, tol=1.0e-8, maxit=100) {
     JC<-jacob(alpha,gamma,Lambda,Phi)
     x<-c(rbind(alpha,Gamma%*%Lambda%*%Phi))
     #se<-sqrt(diag(JC%*%solve(F(fit$par))%*%t(JC)))
-    se<-svd_se(F(fit$par),JC)
+    se<-svd_se(F(fit$par),JC)$se
     loglik <- logLik(fit$par)
   } else if (q==0) {
     x <- sva
@@ -232,12 +232,12 @@ sto <- function(formula, q=NULL, data, tol=1.0e-8, maxit=100) {
     se <- sqrt(diag(solve(I)))
     loglik <- ll0
   }
-  z <- x/se$se
+  z <- x/se
   npars <- m+q*(k+m)-q^2
   aic <- 2*npars-2*loglik
   bic <- npars*log(n)-2*loglik
   #C <- round(cbind(x,se,z,1-stats::pnorm(abs(z))),3)
-  res <- round(cbind(x,se$se,z,1-stats::pnorm(abs(z))),3)
+  res <- round(cbind(x,se,z,1-stats::pnorm(abs(z))),3)
   rownames(res) <- paste(colnames(X),rep(1:m,rep(k+1,m)),sep=':')
   colnames(res) <- c('Estimate','Std. Error','z value','Pr(>|z|)')
   #if (q==0) {
