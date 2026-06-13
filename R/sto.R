@@ -113,7 +113,7 @@ sto <- function(formula, q=NULL, data, tol=1.0e-8, maxit=100) {
       return(c(u))
     }
 
-    H <- function(x) {
+    F <- function(x) {
       gamma <- diag(x[(m+1):(m+k)])
 
       if (q==1) {
@@ -151,7 +151,7 @@ sto <- function(formula, q=NULL, data, tol=1.0e-8, maxit=100) {
         W <- diag(P[i,])-P[i,]%*%t(P[i,])
         I <- I+t(D)%*%W%*%D
       }
-      return(-I)
+      return(I)
     }
 
     logLik<-function(x){
@@ -200,7 +200,7 @@ sto <- function(formula, q=NULL, data, tol=1.0e-8, maxit=100) {
     }
 
     #fit<-maxLik::maxLik(logLik,grad=grad,hess=H,start=sv,constraints=list(ineqA=A,ineqB=B))
-    fit<-stats::constrOptim(sv,logLik,grad,A,B,control=list(fnscale=-1,reltol=1e-10),outer.eps=1e-11)
+    fit<-stats::constrOptim(sv,logLik,grad,A,B,control=list(fnscale=-1,reltol=1e-14),outer.eps=1e-14)
 
     alpha<-fit$par[1:m]
     gamma <- fit$par[(m+1):(m+k)]
@@ -222,7 +222,8 @@ sto <- function(formula, q=NULL, data, tol=1.0e-8, maxit=100) {
     Beta<-Gamma%*%Lambda%*%Phi
     JC<-jacob(alpha,gamma,Lambda,Phi)
     x<-c(rbind(alpha,Gamma%*%Lambda%*%Phi))
-    se<-sqrt(diag(JC%*%solve(-H(fit$par))%*%t(JC)))
+    #se<-sqrt(diag(JC%*%solve(F(fit$par))%*%t(JC)))
+    se<-svd_se(F(fit$par),JC)
     loglik <- logLik(fit$par)
   } else if (q==0) {
     x <- sva
@@ -231,12 +232,12 @@ sto <- function(formula, q=NULL, data, tol=1.0e-8, maxit=100) {
     se <- sqrt(diag(solve(I)))
     loglik <- ll0
   }
-  z <- x/se
+  z <- x/se$se
   npars <- m+q*(k+m)-q^2
   aic <- 2*npars-2*loglik
   bic <- npars*log(n)-2*loglik
   #C <- round(cbind(x,se,z,1-stats::pnorm(abs(z))),3)
-  res <- round(cbind(x,se,z,1-stats::pnorm(abs(z))),3)
+  res <- round(cbind(x,se$se,z,1-stats::pnorm(abs(z))),3)
   rownames(res) <- paste(colnames(X),rep(1:m,rep(k+1,m)),sep=':')
   colnames(res) <- c('Estimate','Std. Error','z value','Pr(>|z|)')
   #if (q==0) {
