@@ -36,6 +36,8 @@ sto <- function(formula, q=NULL, data, tol=1.0e-8, maxit=100) {
   }
   m <- length(unique(y))-1
 
+  if (k==1) {stop('Program is not yet ready for one regressor variable.')}
+
   if (k>0) {
     preds <- colnames(X)[-1]
   } else if (k==0) {
@@ -74,7 +76,11 @@ sto <- function(formula, q=NULL, data, tol=1.0e-8, maxit=100) {
 
     x <- sv
     grad <- function(x) {
-      gamma <- diag(x[(m+1):(m+k)])
+      if (k>1) {
+        gamma <- diag(x[(m+1):(m+k)])
+      } else if (k==1) {
+        gamma <- x[m+1]
+      }
 
       if (q==1) {
         Lambda <- rep(1,k)
@@ -85,11 +91,18 @@ sto <- function(formula, q=NULL, data, tol=1.0e-8, maxit=100) {
       if (q==m) {
         Phi <- U
       }
-      if (q<m) {
+      if (q<m && k>1) {
         Phi <- cbind(U,matrix(x[(m+k*q+1):(m+q*(k+m)-q^2)],nrow=q))
+      } else if (q==1 && k==1) {
+        Phi <- matrix(c(U,x[(m+2):(2*m)]),nrow=1)
       }
 
-      eta <- X%*%rbind(x[1:m],gamma%*%Lambda%*%Phi)
+      if (k==1) {
+        theta <- matrix(c(x[1:m],c(gamma)*Phi),nrow=2,byrow=TRUE)
+      } else if (k>1) {
+        theta <- rbind(x[1:m],gamma%*%Lambda%*%Phi)
+      }
+      eta <- X%*%theta
       eta_max <- apply(eta,1,max)
       eta_centered <- eta-eta_max
       exp_eta <- exp(eta_centered)
@@ -114,7 +127,11 @@ sto <- function(formula, q=NULL, data, tol=1.0e-8, maxit=100) {
     }
 
     F <- function(x) {
-      gamma <- diag(x[(m+1):(m+k)])
+      if (k>1) {
+        gamma <- diag(x[(m+1):(m+k)])
+      } else if (k==1) {
+        gamma <- x[m+1]
+      }
 
       if (q==1) {
         Lambda <- rep(1,k)
@@ -125,11 +142,19 @@ sto <- function(formula, q=NULL, data, tol=1.0e-8, maxit=100) {
       if (q==m) {
         Phi <- U
       }
-      if (q<m) {
+      if (q<m && k>1) {
         Phi <- cbind(U,matrix(x[(m+k*q+1):(m+q*(k+m)-q^2)],nrow=q))
+      } else if (q==1 && k==1) {
+        Phi <- matrix(c(U,x[(m+2):(2*m)]),nrow=1)
       }
 
-      eta <- X%*%rbind(x[1:m],gamma%*%Lambda%*%Phi)
+      if (k==1) {
+        theta <- matrix(c(x[1:m],c(gamma)*Phi),nrow=2,byrow=TRUE)
+      } else if (k>1) {
+        theta <- rbind(x[1:m],gamma%*%Lambda%*%Phi)
+      }
+
+      eta <- X%*%theta
       eta_max <- apply(eta,1,max)
       eta_centered <- eta-eta_max
       exp_eta <- exp(eta_centered)
@@ -155,7 +180,11 @@ sto <- function(formula, q=NULL, data, tol=1.0e-8, maxit=100) {
     }
 
     logLik<-function(x){
-      gamma <- diag(x[(m+1):(m+k)])
+      if (k>1) {
+        gamma <- diag(x[(m+1):(m+k)])
+      } else if (k==1) {
+        gamma <- x[m+1]
+      }
       if (q==1) {
         Lambda <- rep(1,k)
       } else if (q>1) {
@@ -164,10 +193,16 @@ sto <- function(formula, q=NULL, data, tol=1.0e-8, maxit=100) {
       U <- upper.tri(diag(q),diag=TRUE)*1
       if (q==m) {
         Phi <- U
-      } else if (q<m) {
+      } else if (q<m && k>1) {
         Phi <- cbind(U,matrix(x[(m+k*q+1):(m+q*(k+m)-q^2)],nrow=q))
+      } else if (q==1 && k==1) {
+        Phi <- matrix(c(U,x[(m+2):(2*m)]),nrow=1)
       }
-      theta <- rbind(x[1:m],gamma%*%Lambda%*%Phi)
+      if (k==1) {
+        theta <- matrix(c(x[1:m],c(gamma)*Phi),nrow=2,byrow=TRUE)
+      } else if (k>1) {
+        theta <- rbind(x[1:m],gamma%*%Lambda%*%Phi)
+      }
       eta <- X%*%theta
       sum(eta*Z)-sum(log(1+rowSums(exp(eta))))
     }
@@ -204,7 +239,11 @@ sto <- function(formula, q=NULL, data, tol=1.0e-8, maxit=100) {
 
     alpha<-fit$par[1:m]
     gamma <- fit$par[(m+1):(m+k)]
-    Gamma<-diag(gamma)
+    if (k>1) {
+      Gamma<-diag(gamma)
+    } else if (k==1) {
+      Gamma<-gamma
+    }
     if (q==1) {
       Phi<-matrix(c(1,fit$par[(m+k+1):(2*m+k-1)]),nrow=1)
       Lambda<-matrix(rep(1,k),nrow=k)
