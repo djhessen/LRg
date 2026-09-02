@@ -36,7 +36,7 @@ sto <- function(formula, q=NULL, data, tol=1.0e-8, maxit=100) {
   }
   m <- length(unique(y))-1
 
-  if (k==1) {stop('Program is not yet ready for one regressor variable.')}
+#  if (k==1) {stop('Program is not yet ready for one regressor variable.')}
 
   if (k>0) {
     preds <- colnames(X)[-1]
@@ -112,15 +112,22 @@ sto <- function(formula, q=NULL, data, tol=1.0e-8, maxit=100) {
       u <- rep(0,(m+q*(k+m)-q^2))
 
       for (i in 1:n) {
-        x_i <- X[i,-1]
-        D2 <- t(Phi)%*%t(Lambda)%*%diag(x_i)
-        Phi_min <- Phi[-1,,drop=FALSE]
-        xgamma <- matrix(t(x_i)%*%gamma,nrow=1)
-        D3 <- kronecker(t(Phi_min),xgamma)
-        xgamlam <- xgamma%*%Lambda
-        S_phi <- rbind(matrix(0,q,m-q),diag(1,(m-q)))
-        D4 <- kronecker(S_phi,xgamlam)
-        D <- cbind(diag(1,m),D2,D3,D4)
+        if (k>1) {
+          x_i <- X[i,-1]
+          D2 <- t(Phi)%*%t(Lambda)%*%diag(x_i)
+          Phi_min <- Phi[-1,,drop=FALSE]
+          xgamma <- matrix(t(x_i)%*%gamma,nrow=1)
+          D3 <- kronecker(t(Phi_min),xgamma)
+          xgamlam <- xgamma%*%Lambda
+          S_phi <- rbind(matrix(0,q,m-q),diag(1,(m-q)))
+          D4 <- kronecker(S_phi,xgamlam)
+          D <- cbind(diag(m),D2,D3,D4)
+        } else if (k==1) {
+          x_i <- c(X[i,-1])
+          D2 <- x_i*c(1,x[(m+2):(2*m)])
+          D3 <- gamma*x_i*t(cbind(rep(0,m-1),diag(m-1)))
+          D <-cbind(diag(m),D2,D3)
+        }
         u <- u+t(D)%*%(Z[i,]-P[i,])
       }
       return(c(u))
@@ -164,15 +171,22 @@ sto <- function(formula, q=NULL, data, tol=1.0e-8, maxit=100) {
       I <- matrix(0,(m+q*(k+m)-q^2),(m+q*(k+m)-q^2))
 
       for (i in 1:n) {
-        x_i <- X[i,-1]
-        D2 <- t(Phi)%*%t(Lambda)%*%diag(x_i)
-        Phi_min <- Phi[-1,,drop=FALSE]
-        xgamma <- matrix(t(x_i)%*%gamma,nrow=1)
-        D3 <- kronecker(t(Phi_min),xgamma)
-        xgamlam <- xgamma%*%Lambda
-        S_phi <- rbind(matrix(0,q,m-q),diag(1,(m-q)))
-        D4 <- kronecker(S_phi,xgamlam)
-        D <- cbind(diag(1,m),D2,D3,D4)
+        if (k>1) {
+          x_i <- X[i,-1]
+          D2 <- t(Phi)%*%t(Lambda)%*%diag(x_i)
+          Phi_min <- Phi[-1,,drop=FALSE]
+          xgamma <- matrix(t(x_i)%*%gamma,nrow=1)
+          D3 <- kronecker(t(Phi_min),xgamma)
+          xgamlam <- xgamma%*%Lambda
+          S_phi <- rbind(matrix(0,q,m-q),diag(1,(m-q)))
+          D4 <- kronecker(S_phi,xgamlam)
+          D <- cbind(diag(m),D2,D3,D4)
+        } else if (k==1) {
+          x_i <- c(X[i,-1])
+          D2 <- x_i*c(1,x[(m+2):(2*m)])
+          D3 <- gamma*x_i*t(cbind(rep(0,m-1),diag(m-1)))
+          D <-cbind(diag(m),D2,D3)
+        }
         W <- diag(P[i,])-P[i,]%*%t(P[i,])
         I <- I+t(D)%*%W%*%D
       }
@@ -214,7 +228,11 @@ sto <- function(formula, q=NULL, data, tol=1.0e-8, maxit=100) {
         A[i,(m+k+i-1)]<--1
         A[i,(m+k+i)]<-1
       }
-      B<-c(-1,rep(0,m-2))
+      if (k>1) {
+        B<-c(-1,rep(0,m-2))
+      } else if (k==1) {
+        B<-c(1,rep(0,m-2))
+      }
     } else if (q>1 && q<m) {
       A<-diag(m+q*(k+m)-q^2)[(m+k+1):(m+q*(k+m)-q^2),]
       #A<-matrix(0,nrow=(k*(q-1)+q*(m-q)),ncol=(m+q*(k+m)-q^2))
@@ -242,7 +260,7 @@ sto <- function(formula, q=NULL, data, tol=1.0e-8, maxit=100) {
     if (k>1) {
       Gamma<-diag(gamma)
     } else if (k==1) {
-      Gamma<-gamma
+      Gamma<-c(gamma)
     }
     if (q==1) {
       Phi<-matrix(c(1,fit$par[(m+k+1):(2*m+k-1)]),nrow=1)
@@ -258,11 +276,16 @@ sto <- function(formula, q=NULL, data, tol=1.0e-8, maxit=100) {
     if (q==m) {
       Phi<-Phi1
     }
-    Beta<-Gamma%*%Lambda%*%Phi
-    JC<-jacob(alpha,gamma,Lambda,Phi)
-    x<-c(rbind(alpha,Gamma%*%Lambda%*%Phi))
-    #se<-sqrt(diag(JC%*%solve(F(fit$par))%*%t(JC)))
-    se<-svd_se(F(fit$par),JC)$se
+    if (k>1) {
+      Beta<-Gamma%*%Lambda%*%Phi
+      JC<-jacob(alpha,gamma,Lambda,Phi)
+      #se<-sqrt(diag(JC%*%solve(F(fit$par))%*%t(JC)))
+      se<-svd_se(F(fit$par),JC)$se
+    } else if (k==1) {
+      Beta<-Gamma*Phi
+      se<-rep(NA,length(fit$par))
+    }
+    x<-c(rbind(alpha,Beta))
     loglik <- logLik(fit$par)
   } else if (q==0) {
     x <- sva
