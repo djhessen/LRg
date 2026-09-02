@@ -228,11 +228,7 @@ sto <- function(formula, q=NULL, data, tol=1.0e-8, maxit=100) {
         A[i,(m+k+i-1)]<--1
         A[i,(m+k+i)]<-1
       }
-      if (k>1) {
-        B<-c(-1,rep(0,m-2))
-      } else if (k==1) {
-        B<-c(1,rep(0,m-2))
-      }
+      B<-c(1,rep(0,m-2))
     } else if (q>1 && q<m) {
       A<-diag(m+q*(k+m)-q^2)[(m+k+1):(m+q*(k+m)-q^2),]
       #A<-matrix(0,nrow=(k*(q-1)+q*(m-q)),ncol=(m+q*(k+m)-q^2))
